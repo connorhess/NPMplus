@@ -79,6 +79,11 @@ const internalNginx = {
 	 * @returns {Promise}
 	 */
 	test: () => {
+		// Skip nginx test in development (when nginx isn't installed)
+		if (process.env.NODE_ENV === 'development' && !fs.existsSync('/usr/local/nginx')) {
+			logger.info('Skipping nginx test (development mode)');
+			return Promise.resolve();
+		}
 		return utils.execFile("nginx", ["-tq"]);
 	},
 
@@ -87,6 +92,12 @@ const internalNginx = {
 	 */
 
 	reload: () => {
+		// Skip nginx reload in development (when nginx isn't installed)
+		if (process.env.NODE_ENV === 'development' && !fs.existsSync('/usr/local/nginx')) {
+			logger.info('Skipping nginx reload (development mode)');
+			return Promise.resolve();
+		}
+
 		const promises = [];
 
 		if (process.env.ACME_OCSP_STAPLING === "true") {
@@ -133,10 +144,29 @@ const internalNginx = {
 	 * @returns {String}
 	 */
 	getConfigName: (host_type, host_id) => {
+		const dataDir = process.env.NODE_CONFIG_DIR || '/data/npmplus';
+		const nginxConfDir = process.env.NGINX_CONF_DIR || '/usr/local/nginx/conf/conf.d';
+		const nginxDataDir = process.env.NGINX_DATA_DIR || '/data/nginx';
+
 		if (host_type === "default") {
-			return "/usr/local/nginx/conf/conf.d/default.conf";
+			// Create directory if it doesn't exist (for dev)
+			const dir = path.dirname(nginxConfDir);
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			if (!fs.existsSync(nginxConfDir)) {
+				fs.mkdirSync(nginxConfDir, { recursive: true });
+			}
+			return path.join(nginxConfDir, "default.conf");
 		}
-		return `/data/nginx/${internalNginx.getFileFriendlyHostType(host_type)}/${host_id}.conf`;
+
+		// Create subdirectory if it doesn't exist (for dev)
+		const hostDir = path.join(nginxDataDir, internalNginx.getFileFriendlyHostType(host_type));
+		if (!fs.existsSync(hostDir)) {
+			fs.mkdirSync(hostDir, { recursive: true });
+		}
+
+		return path.join(hostDir, `${host_id}.conf`);
 	},
 
 	/**
