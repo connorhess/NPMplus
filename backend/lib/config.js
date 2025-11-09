@@ -69,14 +69,15 @@ const configure = () => {
 		return;
 	}
 
-	logger.info('Using Sqlite: /data/npmplus/database.sqlite');
+	const sqliteFile = process.env.DB_SQLITE_FILE || (process.env.NODE_CONFIG_DIR || '/data/npmplus') + '/database.sqlite';
+	logger.info('Using Sqlite: ' + sqliteFile);
 	instance = {
 		database: {
 			engine: 'knex-native',
 			knex: {
 				client: 'better-sqlite3',
 				connection: {
-					filename: '/data/npmplus/database.sqlite',
+					filename: sqliteFile,
 				},
 				useNullAsDefault: true,
 			},
@@ -110,6 +111,12 @@ const generateKeys = () => {
 		key: key.exportKey('private').toString(),
 		pub: key.exportKey('public').toString(),
 	};
+
+	// Ensure directory exists
+	const keysDir = require('path').dirname(keysFile);
+	if (!fs.existsSync(keysDir)) {
+		fs.mkdirSync(keysDir, { recursive: true });
+	}
 
 	// Write keys config
 	try {
