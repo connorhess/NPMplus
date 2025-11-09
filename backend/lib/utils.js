@@ -5,11 +5,25 @@ const execFile = require("node:child_process").execFile;
 const { Liquid } = require("liquidjs");
 const logger = require("../logger").global;
 const error = require("./error");
+const path = require("path");
+
+// Helper to get templates directory (works in both Docker and development)
+const getTemplatesPath = () => {
+	// In Docker, templates are at /app/templates
+	// In development, they're at backend/templates relative to this file
+	const dockerPath = "/app/templates";
+	const devPath = path.join(__dirname, "..", "templates");
+
+	return fs.existsSync(dockerPath) ? dockerPath : devPath;
+};
 
 module.exports = {
+	getTemplatesPath,
+
 	writeHash: () => {
-		const envVars = fs.readdirSync("/app/templates").flatMap((file) => {
-			const content = fs.readFileSync("/app/templates/" + file, "utf8");
+		const templatesPath = getTemplatesPath();
+		const envVars = fs.readdirSync(templatesPath).flatMap((file) => {
+			const content = fs.readFileSync(path.join(templatesPath, file), "utf8");
 			const matches = content.match(/env\.[A-Z0-9_]+/g) || [];
 			return matches.map((match) => match.replace("env.", ""));
 		});
@@ -79,7 +93,7 @@ module.exports = {
 	 */
 	getRenderEngine: () => {
 		const renderEngine = new Liquid({
-			root: "/app/templates/",
+			root: getTemplatesPath(),
 		});
 
 		/**

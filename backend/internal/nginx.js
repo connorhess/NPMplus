@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const fs = require("node:fs");
+const path = require("path");
 const logger = require("../logger").nginx;
 const utils = require("../lib/utils");
 const error = require("../lib/error");
@@ -148,7 +149,8 @@ const internalNginx = {
 			let template;
 
 			try {
-				template = fs.readFileSync("/app/templates/_proxy_host_custom_location.conf", { encoding: "utf8" });
+				const templatesPath = utils.getTemplatesPath();
+				template = fs.readFileSync(path.join(templatesPath, "_proxy_host_custom_location.conf"), { encoding: "utf8" });
 			} catch (err) {
 				reject(new error.ConfigurationError(err.message));
 				return;
@@ -211,7 +213,8 @@ const internalNginx = {
 			const filename = internalNginx.getConfigName(nice_host_type, host.id);
 
 			try {
-				template = fs.readFileSync(`/app/templates/${nice_host_type}.conf`, { encoding: "utf8" });
+				const templatesPath = utils.getTemplatesPath();
+				template = fs.readFileSync(path.join(templatesPath, `${nice_host_type}.conf`), { encoding: "utf8" });
 			} catch (err) {
 				reject(new error.ConfigurationError(err.message));
 				return;

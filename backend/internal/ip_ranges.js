@@ -1,5 +1,6 @@
 const https = require("https");
 const fs = require("fs");
+const path = require("path");
 const logger = require("../logger").ip_ranges;
 const error = require("../lib/error");
 const utils = require("../lib/utils");
@@ -104,7 +105,8 @@ const internalIpRanges = {
 			let template = null;
 			const filename = "/tmp/ip_ranges.conf";
 			try {
-				template = fs.readFileSync("/app/templates/ip_ranges.conf", { encoding: "utf8" });
+				const templatesPath = utils.getTemplatesPath();
+				template = fs.readFileSync(path.join(templatesPath, "ip_ranges.conf"), { encoding: "utf8" });
 			} catch (err) {
 				reject(new error.ConfigurationError(err.message));
 				return;
