@@ -39,7 +39,9 @@
 		"webpack-visualizer-plugin": "0.1.11"
 	},
 	"scripts": {
-		"build": "webpack --mode production"
+		"build": "webpack --mode production",
+		"dev": "webpack --mode development --watch",
+		"dev:serve": "webpack-dev-server --mode development --open --port 8080"
 	},
 	"author": "Jamie Curnow <jc@jc21.com> and ZoeyVid <zoeyvid@zvcdn.de>",
 	"license": "MIT"

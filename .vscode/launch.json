@@ -15,7 +15,8 @@
         "ACME_EMAIL": "dev@example.com",
         "DB_SQLITE_FILE": "${workspaceFolder}/.dev-data/npmplus/database.sqlite",
         "NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus",
-        "DEBUG": "true"
+        "DEBUG": "true",
+        "BACKEND_PORT": "3000"
       },
       "envFile": "${workspaceFolder}/.env",
       "console": "integratedTerminal",
@@ -27,6 +28,18 @@
         "${workspaceFolder}/**",
         "!**/node_modules/**"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "NPMplus Frontend (Dev)",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/frontend-old",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "outputCapture": "std"
     },
     {
       "type": "node",
@@ -98,6 +111,18 @@
       "port": 9229,
       "skipFiles": ["<node_internals>/**"],
       "restart": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "NPMplus Full Stack (Dev)",
+      "configurations": ["NPMplus Backend (Dev)", "NPMplus Frontend (Dev)"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "development",
+        "order": 1
+      }
     }
   ],
   "inputs": [
