@@ -15,8 +15,10 @@
 		"ejs-lint": "2.0.1",
 		"ejs-loader": "0.4.1",
 		"ejs-webpack-loader": "2.2.2",
+		"express": "^4.18.2",
 		"file-loader": "6.2.0",
 		"html-webpack-plugin": "4.5.2",
+		"http-proxy-middleware": "^2.0.6",
 		"imports-loader": "0.8.0",
 		"jquery": "3.7.1",
 		"jquery-mask-plugin": "1.14.16",
@@ -41,7 +43,8 @@
 	"scripts": {
 		"build": "webpack --mode production",
 		"dev": "webpack --mode development --watch",
-		"dev:serve": "webpack-dev-server --mode development --open --port 8080"
+		"serve": "node dev-server.js",
+		"dev:full": "npm run build && npm run serve"
 	},
 	"author": "Jamie Curnow <jc@jc21.com> and ZoeyVid <zoeyvid@zvcdn.de>",
 	"license": "MIT"

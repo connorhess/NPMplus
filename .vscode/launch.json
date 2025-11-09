@@ -35,8 +35,12 @@
       "name": "NPMplus Frontend (Dev)",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": ["run", "serve"],
       "cwd": "${workspaceFolder}/frontend-old",
+      "env": {
+        "FRONTEND_PORT": "8080",
+        "BACKEND_URL": "http://127.0.0.1:3000"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "outputCapture": "std"
