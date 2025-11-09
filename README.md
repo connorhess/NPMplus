@@ -354,6 +354,133 @@ I created this project to fill a personal need to provide users with an easy way
 - Advanced Nginx configuration available for super users
 - User management, permissions and audit log
 
+## Roadmap & Proposed Improvements
+
+This section collects proposed features, improvements and implementation notes. The goal is to provide a prioritized, actionable roadmap for short-, mid- and long-term work on NPMplus. Each feature below includes a short rationale and (for key items) a small "contract" and edge cases to consider.
+
+Primary priorities (suggested):
+- P0: Safety / Security / Data integrity fixes and small UX blockers
+- P1: High-value features that increase usability (grouping hosts, traffic logging, port-forwarding UI)
+- P2: Platform and ops improvements (metrics, HA, backups, plugin system)
+
+Key feature proposals
+
+- Port forwarding & NAT management (UPnP/NAT-PMP/manual mapping)
+  - Rationale: enable users to manage external port mappings from the GUI for home/edge deployments where firewall/NAT configuration is the blocker.
+  - Contract:
+    - Inputs: port number(s), protocol (tcp/udp), internal host/port, lifetime/auto-renew flag, optional description and tag
+    - Outputs: created mapping state, current external port, lease expiry, error codes
+    - Error modes: NAT device unreachable, permission denied by router, port conflict
+  - Edge cases: double-mapped external port, external IP changes (dynamic WAN), multiple routers in chain (double NAT)
+  - Implementation notes: add a new backend service that attempts UPnP/NAT-PMP calls and falls back to manual instructions; persist mapping metadata in DB; expose API + UI and logs; grant only admin permission.
+
+- Traffic logging & analytics
+  - Rationale: per-host traffic insights, forensic data, troubleshooting, rate-based alerts and better CrowdSec signal fidelity.
+  - Capabilities: per-proxy-host request logs (optionally full request/response metadata), aggregated metrics (requests/sec, bandwidth), retention policies, export (CSV/JSON), real-time tail view.
+  - Contract:
+    - Inputs: enable flag per-host, retention period, storage backend (sqlite/files), sampling rate
+    - Outputs: queryable logs, aggregated metrics endpoints, dashboard/visualization
+  - Edge cases: high-volume hosts (log pressure), PII in logs (privacy), disk full and log rotation
+  - Implementation notes: integrate optional structured logging (JSON) to files or a lightweight log DB; implement configurable sampling/filters to avoid overload; provide GoAccess/Prometheus integration and a UI for log search/filters.
+
+- Grouping, tagging & bulk operations for Proxy Hosts
+  - Rationale: when many hosts are present, groups/folders/tags and bulk actions (enable/disable, renew certs, delete) make management feasible.
+  - Features: hierarchical folders or flat tags, saved filters, favorites, bulk-edit modal, quick-search and pagination improvements.
+  - Contract:
+    - Inputs: group/tag creation, assign/unassign hosts, saved views
+    - Outputs: filtered host lists, group membership, bulk operation results
+  - Edge cases: conflicts when multiple admins edit groups, migration of existing hosts, permission-based visibility
+  - Implementation notes: add a lightweight grouping table (host_id -> group_id), allow tags as key-value pairs, update UI list to support multi-select and bulk actions; add unit tests for group CRUD and bulk operations.
+
+- Observability & Monitoring (Prometheus + Grafana dashboards)
+  - Expose process and nginx metrics, request rates, certificate expiry alerts, and queue lengths. Provide example Grafana dashboards and alert rules.
+
+- Role-Based Access Control (RBAC), SSO & 2FA
+  - Add finer-grained permissions (hosts, streams, settings, logs), support SSO providers (OIDC, SAML), and optional 2FA for admin accounts.
+
+- Audit log improvements and change history
+  - Store full change diffs for critical entities (hosts, users, settings), provide UI timeline and export for compliance.
+
+- Backup & Restore, Export/Import of configuration
+  - Provide single-click backup, scheduled backups, and an import tool to move between instances (including certificates, with guidance about secret handling).
+
+- High-Availability & Clustering
+  - Leader election for tasks like certificate renewals, shared DB considerations, sticky sessions/load balancing of UI. Consider Postgres support as an officially tested option for HA (with migration scripts and docs).
+
+- Plugin / Extension System and Webhooks
+  - A minimal plugin architecture (server-side hooks and admin-managed extensions) and webhooks for external automation (on-create-host, cert-renewed, block-detected).
+
+- Certificate management improvements
+  - Bulk operations, per-host ACME overrides, manual/automatic renewal logs, improved ACME provider management UI, and certificate lifecycle visualization.
+
+- DNS provider and ACME plugin updates
+  - Revisit bundled certbot DNS plugin set, ensure modern plugin compatibility, and add an admin UI to test/validate provider credentials.
+
+- Stream (TCP/UDP) usability improvements
+  - Grouping/filtering for streams, port-range management UI, proxy protocol toggles, and improved validation for forwarding ports.
+
+- Performance & caching
+  - Nginx tuning presets for high-throughput workloads, optional micro-cache UI settings, and static file caching controls.
+
+- Developer experience: tests, CI, and contributor docs
+  - Add unit tests for new features, integration tests for upgrade/migrate paths, and developer guide for building and running the app locally.
+
+Short-term (0-3 months) candidate tasks
+
+- Implement host grouping/tags and bulk actions (P1)
+- Add a basic traffic-log toggle + wire a lightweight log viewer (P1)
+- Add a port-forwarding UI that attempts UPnP/NAT-PMP and shows status (P1)
+- Add Prometheus metrics basic exporter and one example dashboard (P1)
+
+Mid-term (3-9 months)
+
+- RBAC & SSO support (P2)
+- Audit log full diffs and UI timeline (P2)
+- Backup/Restore with scheduled backups and import/export (P2)
+- Plugin system & webhooks (P2)
+
+Long-term (9+ months)
+
+- HA & clustering with official Postgres support (P2)
+- Full-blown analytics platform (ELK/ClickHouse optional integration) and advanced traffic queries (P2)
+
+Implementation notes & engineering checklist (general)
+
+- Contract & API: whenever a new feature needs persistence or external interaction, define a small contract (inputs/outputs/error codes) and add OpenAPI/Swagger definitions for new endpoints.
+- Data model & migrations: draft migration steps before DB schema changes; prefer additive migrations; include backwards compatibility toggles where feasible.
+- Privacy & retention: any logging/analytics work must include per-host and global retention settings, PII redaction guidelines and a toggle to disable logs entirely.
+- Tests: for each P1 feature add at least 1 unit test and 1 integration test (happy path + one edge case). Add db migration test harness for schema changes.
+
+Three highlighted features — short engineering contracts and edge cases
+
+1) Port forwarding & UPnP (highlight)
+  - Contract: create/remove/list mappings; status reporting; optional auto-renew
+  - Storage: table mappings {id, router_id, external_port, protocol, internal_ip, internal_port, method, lease_expires, owner_user}
+  - Edge cases: dynamic WAN IP changes; double NAT where UPnP fails; router that requires authentication or denies mapping
+
+2) Traffic logging (highlight)
+  - Contract: create log entries (timestamp, host_id, client_ip, method, path, status, bytes_in/out, latency, optional headers), query by host/time/filters
+  - Storage model: configurable—flat files (rotated) OR small logging DB table for low-volume installs; provide sampling and discarding rules
+  - Edge cases: high throughput (need sampling), privacy-sensitive headers, disk pressure when retention misconfigured
+
+3) Grouping proxy hosts (highlight)
+  - Contract: group CRUD, assign/unassign hosts, bulk operations endpoint, saved views for users
+  - Edge cases: concurrent edits from multiple admins, large lists performance (add pagination), migration of existing hosts to groups
+
+Next steps
+
+1. Decide which items to tackle as P1 and create issue(s) per feature with the short contract above.
+2. Implement small prototypes for the top 3 (grouping UI, port-forwarding UI + backend probe, lightweight traffic logging with sampling) and add tests.
+3. Add Prometheus metrics and a sample Grafana dashboard to help validate load & logging choices.
+
+People and permissions
+
+Keep all network-changing features (port mappings, firewall rules) admin-only. Allow read-only metrics for lower-privilege users if necessary.
+
+Security & privacy note
+
+Where logs are introduced, provide clear defaults to not log sensitive headers and offer an easy way to opt out or configure retention. Document privacy implications prominently in this README and in the UI where logs are enabled.
+
 ## Contributing
 All are welcome to create pull requests for this project, but this does not mean that they will be merged, so better ask if your PR would be merged before creating one (via Discussion), typos and translation are excluded from this.
 
