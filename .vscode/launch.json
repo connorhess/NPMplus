@@ -34,16 +34,17 @@
       "request": "launch",
       "name": "NPMplus Frontend (Dev)",
       "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "serve"],
+      "program": "${workspaceFolder}/frontend-old/dev-server.js",
       "cwd": "${workspaceFolder}/frontend-old",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
       "env": {
         "FRONTEND_PORT": "8080",
         "BACKEND_URL": "http://127.0.0.1:3000"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "outputCapture": "std"
+      "outputCapture": "std",
+      "restart": true
     },
     {
       "type": "node",
