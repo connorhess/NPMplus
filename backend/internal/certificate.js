@@ -11,7 +11,7 @@ const error = require("../lib/error");
 const utils = require("../lib/utils");
 const certbot = require("../lib/certbot");
 const certificateModel = require("../models/certificate");
-const dnsPlugins = require("../certbot-dns-plugins.json");
+const dnsPlugins = require("../../global/certbot-dns-plugins.json");
 const internalAuditLog = require("./audit-log");
 const internalNginx = require("./nginx");
 
