@@ -23,7 +23,7 @@ function omissions() {
 
 const internalCertificate = {
 	allowedSslFiles: ["certificate", "certificate_key", "intermediate_certificate"],
-	intervalTimeout: 1000 * 60 * 60 * Number(process.env.CRT),
+	intervalTimeout: 1000 * 60 * 60 * Number(process.env.CRT || 23),
 	interval: null,
 	intervalProcessing: false,
 
@@ -33,13 +33,24 @@ const internalCertificate = {
 			internalCertificate.processExpiringHosts,
 			internalCertificate.intervalTimeout,
 		);
-		internalCertificate.processExpiringHosts();
+		// Skip initial processing in development without certbot
+		if (process.env.NODE_ENV === 'development') {
+			logger.info('Skipping initial certbot renewal (development mode)');
+		} else {
+			internalCertificate.processExpiringHosts();
+		}
 	},
 
 	/**
 	 * Triggered by a timer, this will check for expiring hosts and renew their tls certs if required
 	 */
 	processExpiringHosts: () => {
+		// Skip in development when certbot isn't installed
+		if (process.env.NODE_ENV === 'development') {
+			internalCertificate.intervalProcessing = false;
+			return Promise.resolve();
+		}
+
 		if (!internalCertificate.intervalProcessing) {
 			internalCertificate.intervalProcessing = true;
 			logger.info("Renewing TLS certs close to expiry...");

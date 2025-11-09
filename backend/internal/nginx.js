@@ -80,7 +80,7 @@ const internalNginx = {
 	 */
 	test: () => {
 		// Skip nginx test in development (when nginx isn't installed)
-		if (process.env.NODE_ENV === 'development' && !fs.existsSync('/usr/local/nginx')) {
+		if (process.env.NODE_ENV === 'development') {
 			logger.info('Skipping nginx test (development mode)');
 			return Promise.resolve();
 		}
@@ -93,7 +93,7 @@ const internalNginx = {
 
 	reload: () => {
 		// Skip nginx reload in development (when nginx isn't installed)
-		if (process.env.NODE_ENV === 'development' && !fs.existsSync('/usr/local/nginx')) {
+		if (process.env.NODE_ENV === 'development') {
 			logger.info('Skipping nginx reload (development mode)');
 			return Promise.resolve();
 		}
