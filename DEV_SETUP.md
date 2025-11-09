@@ -4,8 +4,10 @@ This guide will help you set up a local development environment for NPMplus.
 
 ## Prerequisites
 
-- **Node.js** (v18 or later recommended)
-- **npm** or **yarn**
+- **Node.js** (v18 or later recommended) - **[Installation Guide](INSTALL_NODEJS.md)**
+  - If you get "node is not recognized" errors, Node.js is not installed
+  - See [INSTALL_NODEJS.md](INSTALL_NODEJS.md) for detailed installation instructions
+- **npm** (comes with Node.js)
 - **Git**
 - **VS Code** (recommended, with launch configurations included)
 

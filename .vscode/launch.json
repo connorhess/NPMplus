@@ -8,6 +8,8 @@
 			"skipFiles": ["<node_internals>/**"],
 			"program": "${workspaceFolder}/backend/index.js",
 			"cwd": "${workspaceFolder}/backend",
+			"runtimeExecutable": "node",
+			"runtimeVersion": "default",
 			"env": {
 				"NODE_ENV": "development",
 				"TZ": "UTC",
@@ -21,7 +23,11 @@
 			"restart": true,
 			"runtimeArgs": ["--trace-warnings"],
 			"outputCapture": "std",
-			"internalConsoleOptions": "neverOpen"
+			"internalConsoleOptions": "neverOpen",
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/**",
+				"!**/node_modules/**"
+			]
 		},
 		{
 			"type": "node",
