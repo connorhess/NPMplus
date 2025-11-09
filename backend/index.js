@@ -21,8 +21,20 @@ async function appStart() {
 			internalCertificate.initTimer();
 			internalIpRanges.initTimer();
 
-			const server = app.listen("/run/npmplus.sock", () => {
-				logger.info("Backend PID " + process.pid + " listening on unix socket");
+			// Use TCP port in development (Windows doesn't support Unix sockets well)
+			// Use Unix socket in production (Docker environment)
+			const listenTarget = process.env.NODE_ENV === 'development'
+				? parseInt(process.env.BACKEND_PORT || 3000, 10)
+				: "/run/npmplus.sock";
+
+			const listenHost = process.env.NODE_ENV === 'development' ? "127.0.0.1" : undefined;
+
+			const server = app.listen(listenTarget, listenHost, () => {
+				if (process.env.NODE_ENV === 'development') {
+					logger.info(`Backend PID ${process.pid} listening on http://127.0.0.1:${listenTarget}`);
+				} else {
+					logger.info("Backend PID " + process.pid + " listening on unix socket");
+				}
 
 				process.on("SIGTERM", () => {
 					logger.info("PID " + process.pid + " received SIGTERM");
