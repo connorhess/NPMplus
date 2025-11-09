@@ -2,7 +2,7 @@ const fs = require('fs');
 const NodeRSA = require('node-rsa');
 const logger = require('../logger').global;
 
-const keysFile = '/data/npmplus/keys.json';
+const keysFile = (process.env.NODE_CONFIG_DIR || '/data/npmplus') + '/keys.json';
 
 let instance = null;
 
