@@ -1,0 +1,271 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install Backend Dependencies",
+			"type": "shell",
+			"command": "npm install",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Backend Dev Server",
+			"type": "shell",
+			"command": "node index.js",
+			"options": {
+				"cwd": "${workspaceFolder}/backend",
+				"env": {
+					"NODE_ENV": "development",
+					"TZ": "UTC",
+					"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus"
+				}
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "custom",
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*Starting.*$",
+					"endsPattern": "^.*listening.*$"
+				}
+			}
+		},
+		{
+			"label": "Run Backend Dev Server (with nodemon)",
+			"type": "shell",
+			"command": "npx nodemon index.js",
+			"options": {
+				"cwd": "${workspaceFolder}/backend",
+				"env": {
+					"NODE_ENV": "development",
+					"TZ": "UTC",
+					"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus"
+				}
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "custom",
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*starting.*$",
+					"endsPattern": "^.*listening.*$"
+				}
+			}
+		},
+		{
+			"label": "Run Database Migrations",
+			"type": "shell",
+			"command": "node migrate.js",
+			"options": {
+				"cwd": "${workspaceFolder}/backend",
+				"env": {
+					"NODE_ENV": "development",
+					"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus"
+				}
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Validate Schema",
+			"type": "shell",
+			"command": "npm run validate-schema",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "test",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ESLint Check",
+			"type": "shell",
+			"command": "npx eslint .",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "test",
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": {
+				"owner": "eslint",
+				"source": "eslint",
+				"fileLocation": ["relative", "${workspaceFolder}/backend"],
+				"pattern": [
+					{
+						"regexp": "^([^\\s].*)$",
+						"file": 1
+					},
+					{
+						"regexp": "^\\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.*)\\s\\s+(.*)$",
+						"line": 1,
+						"column": 2,
+						"severity": 3,
+						"message": 4,
+						"code": 5,
+						"loop": true
+					}
+				]
+			}
+		},
+		{
+			"label": "ESLint Fix",
+			"type": "shell",
+			"command": "npx eslint . --fix",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Create Dev Data Directory",
+			"type": "shell",
+			"command": "New-Item -ItemType Directory -Force -Path '${workspaceFolder}/.dev-data/npmplus'",
+			"options": {
+				"shell": {
+					"executable": "powershell.exe"
+				}
+			},
+			"group": "none",
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Setup Dev Environment",
+			"dependsOn": [
+				"Create Dev Data Directory",
+				"Install Backend Dependencies"
+			],
+			"dependsOrder": "sequence",
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean Dev Database",
+			"type": "shell",
+			"command": "Remove-Item -Path '${workspaceFolder}/.dev-data/npmplus/*.sqlite*' -Force -ErrorAction SilentlyContinue",
+			"options": {
+				"shell": {
+					"executable": "powershell.exe"
+				}
+			},
+			"group": "none",
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Docker: Build NPMplus",
+			"type": "shell",
+			"command": "docker build -t npmplus:dev .",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Docker Compose: Up",
+			"type": "shell",
+			"command": "docker compose up -d",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Docker Compose: Down",
+			"type": "shell",
+			"command": "docker compose down",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Docker Compose: Logs",
+			"type": "shell",
+			"command": "docker compose logs -f",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "none",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

@@ -1,0 +1,108 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "NPMplus Backend (Dev)",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/backend/index.js",
+			"cwd": "${workspaceFolder}/backend",
+			"env": {
+				"NODE_ENV": "development",
+				"TZ": "UTC",
+				"ACME_EMAIL": "dev@example.com",
+				"DB_SQLITE_FILE": "${workspaceFolder}/.dev-data/npmplus/database.sqlite",
+				"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus",
+				"DEBUG": "true"
+			},
+			"envFile": "${workspaceFolder}/.env",
+			"console": "integratedTerminal",
+			"restart": true,
+			"runtimeArgs": ["--trace-warnings"],
+			"outputCapture": "std",
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "NPMplus Backend (Production Mode)",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/backend/index.js",
+			"cwd": "${workspaceFolder}/backend",
+			"env": {
+				"NODE_ENV": "production",
+				"TZ": "UTC",
+				"ACME_EMAIL": "dev@example.com"
+			},
+			"envFile": "${workspaceFolder}/.env",
+			"console": "integratedTerminal",
+			"restart": false,
+			"outputCapture": "std",
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Run Migrations",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/backend/migrate.js",
+			"cwd": "${workspaceFolder}/backend",
+			"env": {
+				"NODE_ENV": "development",
+				"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus"
+			},
+			"envFile": "${workspaceFolder}/.env",
+			"console": "integratedTerminal",
+			"outputCapture": "std"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Password Reset",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/backend/password-reset.js",
+			"cwd": "${workspaceFolder}/backend",
+			"args": ["${input:userEmail}", "${input:newPassword}"],
+			"env": {
+				"NODE_ENV": "development",
+				"NODE_CONFIG_DIR": "${workspaceFolder}/.dev-data/npmplus"
+			},
+			"envFile": "${workspaceFolder}/.env",
+			"console": "integratedTerminal",
+			"outputCapture": "std"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Validate Schema",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/backend/validate-schema.js",
+			"cwd": "${workspaceFolder}/backend",
+			"console": "integratedTerminal",
+			"outputCapture": "std"
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Running Process",
+			"port": 9229,
+			"skipFiles": ["<node_internals>/**"],
+			"restart": true
+		}
+	],
+	"inputs": [
+		{
+			"id": "userEmail",
+			"type": "promptString",
+			"description": "Enter user email address",
+			"default": "admin@example.org"
+		},
+		{
+			"id": "newPassword",
+			"type": "promptString",
+			"description": "Enter new password",
+			"password": true
+		}
+	]
+}

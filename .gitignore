@@ -786,3 +786,15 @@ node_modules/
 
 config.php
 **/config.php
+
+# NPMplus Development Environment
+.dev-data/
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm

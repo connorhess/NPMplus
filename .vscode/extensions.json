@@ -1,0 +1,46 @@
+{
+	"recommendations": [
+		// Code Quality & Formatting
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+
+		// JavaScript/Node.js Development
+		"christian-kohler.npm-intellisense",
+		"eg2.vscode-npm-script",
+
+		// Database Tools
+		"alexcvzz.vscode-sqlite",
+		"mtxr.sqltools",
+		"mtxr.sqltools-driver-sqlite",
+
+		// Docker Support
+		"ms-azuretools.vscode-docker",
+
+		// Git Tools
+		"eamodio.gitlens",
+		"mhutchie.git-graph",
+
+		// REST API Testing
+		"humao.rest-client",
+		"rangav.vscode-thunder-client",
+
+		// YAML/Config Files
+		"redhat.vscode-yaml",
+
+		// Markdown
+		"yzhang.markdown-all-in-one",
+
+		// JSON Tools
+		"zainchen.json",
+
+		// Code Navigation
+		"wayou.vscode-todo-highlight",
+		"gruntfuggly.todo-tree",
+
+		// Utilities
+		"streetsidesoftware.code-spell-checker",
+		"usernamehw.errorlens",
+		"oderwat.indent-rainbow",
+		"naumovs.color-highlight"
+	]
+}
